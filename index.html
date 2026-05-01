@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dipa — Web Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06080d;--surface:#0c0f16;--surface2:#111520;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --accent:#00e5ff;--accent2:#7b61ff;
+  --text:#e8edf5;--muted:#506070;--muted2:#8a9ab0;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);font-family:'Syne',sans-serif;color:var(--text);overflow-x:hidden;cursor:none}
+
+#cdot{width:6px;height:6px;background:var(--accent);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%)}
+#cring{width:38px;height:38px;border:1.5px solid rgba(0,229,255,0.35);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s}
+body:has(a:hover) #cring,body:has(button:hover) #cring{width:56px;height:56px;border-color:rgba(0,229,255,0.75)}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.2rem 3rem;background:rgba(6,8,13,0.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.logo{font-family:'Space Mono',monospace;font-size:13px;color:var(--accent);letter-spacing:.05em}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted2);text-decoration:none;letter-spacing:.1em;text-transform:uppercase;transition:color .2s}
+.nav-links a:hover{color:var(--accent)}
+
+.hero{min-height:100vh;display:grid;grid-template-columns:1fr 440px;position:relative;overflow:hidden;padding-top:80px}
+.hero-left{display:flex;flex-direction:column;justify-content:center;padding:5rem 3rem 5rem 4rem;position:relative;z-index:2}
+.hero-right{position:relative;overflow:hidden;display:flex;align-items:flex-end;justify-content:center}
+
+.grid-bg{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);background-size:56px 56px;animation:gFade 2s ease both}
+@keyframes gFade{from{opacity:0}to{opacity:1}}
+.orb{position:absolute;border-radius:50%;pointer-events:none;z-index:0}
+.orb1{width:550px;height:550px;background:radial-gradient(circle,rgba(0,229,255,0.07) 0%,transparent 65%);top:-120px;right:-80px;animation:oFloat 9s ease-in-out infinite alternate}
+.orb2{width:380px;height:380px;background:radial-gradient(circle,rgba(123,97,255,0.09) 0%,transparent 65%);bottom:-60px;left:10%;animation:oFloat 12s ease-in-out infinite alternate-reverse}
+@keyframes oFloat{from{transform:translateY(0) scale(1)}to{transform:translateY(-44px) scale(1.07)}}
+
+.h-tag{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:10px;margin-bottom:1.5rem;opacity:0;animation:fUp .7s ease .3s both}
+.h-tag::before{content:'';width:30px;height:1px;background:var(--accent);flex-shrink:0}
+.h-name{font-size:clamp(3.5rem,5.5vw,6rem);font-weight:800;line-height:.95;letter-spacing:-.04em;margin-bottom:.75rem;opacity:0;animation:fUp .7s ease .5s both}
+.h-name .grad{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.h-sub{font-size:1rem;color:var(--muted2);margin-bottom:1.75rem;opacity:0;animation:fUp .7s ease .7s both}
+.h-bio{font-size:.92rem;color:var(--muted2);line-height:1.85;max-width:480px;margin-bottom:2.75rem;opacity:0;animation:fUp .7s ease .9s both}
+.h-btns{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;animation:fUp .7s ease 1.1s both}
+
+.btn-p{padding:.8rem 2rem;background:var(--accent);color:#000;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;border:none;border-radius:6px;cursor:none;text-decoration:none;display:inline-block;transition:transform .2s,box-shadow .2s}
+.btn-p:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,229,255,.35)}
+.btn-g{padding:.8rem 2rem;background:transparent;color:var(--text);font-family:'Space Mono',monospace;font-size:12px;border:1px solid var(--border2);border-radius:6px;cursor:none;text-decoration:none;display:inline-block;transition:border-color .2s,color .2s}
+.btn-g:hover{border-color:var(--accent);color:var(--accent)}
+
+.photo-wrap{position:relative;z-index:2;width:390px;opacity:0;animation:fRight 1s ease .6s both}
+.photo-wrap img{width:100%;display:block;mask-image:linear-gradient(to top,transparent 0%,black 20%,black 88%,transparent 100%);-webkit-mask-image:linear-gradient(to top,transparent 0%,black 20%,black 88%,transparent 100%);filter:contrast(1.05)}
+.photo-line{position:absolute;bottom:60px;left:-18px;width:2px;height:180px;background:linear-gradient(to bottom,transparent,var(--accent),transparent);animation:lineG 1.2s ease 1.3s both}
+@keyframes lineG{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+.photo-badge{position:absolute;bottom:90px;right:-20px;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;padding:.75rem 1rem;font-family:'Space Mono',monospace;font-size:10px;line-height:1.6;color:var(--muted2);animation:fUp .6s ease 1.5s both;opacity:0}
+.photo-badge strong{color:var(--accent);display:block;font-size:16px;font-weight:700}
+
+@keyframes fUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+
+.stats-row{display:flex;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.stat{flex:1;padding:1.5rem 2rem;text-align:center;border-right:1px solid var(--border);opacity:0;animation:fUp .6s ease both}
+.stat:last-child{border-right:none}
+.stat:nth-child(1){animation-delay:1.2s}.stat:nth-child(2){animation-delay:1.35s}
+.stat:nth-child(3){animation-delay:1.5s}.stat:nth-child(4){animation-delay:1.65s}
+.stat-n{font-size:2.2rem;font-weight:800;color:var(--accent);display:block;font-variant-numeric:tabular-nums}
+.stat-l{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px;display:block}
+
+section{padding:5.5rem 4rem}
+.sec-lbl{font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:.2em;text-transform:uppercase;display:flex;align-items:center;gap:12px;margin-bottom:.5rem}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
+.sec-ttl{font-size:2.2rem;font-weight:800;letter-spacing:-.03em;margin-bottom:2.75rem}
+
+/* SKILLS */
+.skills-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.sk-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.25rem 1.5rem;position:relative;overflow:hidden;transition:border-color .25s,transform .25s}
+.sk-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.sk-card:hover{border-color:rgba(0,229,255,.35);transform:translateY(-4px)}
+.sk-card:hover::before{transform:scaleX(1)}
+.sk-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem}
+.sk-name{font-size:14px;font-weight:700}
+.sk-pct{font-family:'Space Mono',monospace;font-size:12px;color:var(--accent)}
+.sk-track{height:2px;background:rgba(255,255,255,.07);border-radius:99px;overflow:hidden}
+.sk-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transform:scaleX(0);transform-origin:left;transition:transform 1s cubic-bezier(.22,1,.36,1)}
+
+/* ======= PROJECT CARDS - REVAMPED ======= */
+.proj-featured{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:24px}
+.proj-card-big{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:18px;overflow:hidden;
+  cursor:none;
+  transition:border-color .3s,transform .3s,box-shadow .3s;
+  display:flex;flex-direction:column;
+}
+.proj-card-big{cursor:none}
+.proj-card-big:hover{border-color:rgba(0,229,255,.4);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,229,255,.08)}
+.proj-screen::after{content:'Kunjungi Proyek ↗';position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,rgba(0,229,255,.15),transparent);color:var(--accent);font-family:"Space Mono",monospace;font-size:11px;letter-spacing:.08em;padding:10px 14px;opacity:0;transition:opacity .3s;text-align:center;backdrop-filter:blur(2px)}
+.proj-card-big:hover .proj-screen::after{opacity:1}
+
+.proj-screen{
+  position:relative;height:220px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.proj-screen-inner{
+  width:100%;height:100%;
+  transform:scale(1);transition:transform .4s ease;
+  display:flex;align-items:flex-start;justify-content:flex-start;
+  overflow:hidden;
+}
+.proj-card-big:hover .proj-screen-inner{transform:scale(1.03)}
+
+/* IIN Portal mock screen */
+.mock-portal{
+  width:100%;height:100%;
+  background:linear-gradient(135deg,#0a1628 0%,#0f1f3a 100%);
+  display:flex;gap:0;font-family:'Space Mono',monospace;
+}
+.mock-sidebar{
+  width:80px;background:#08122a;border-right:1px solid rgba(201,168,76,.1);
+  display:flex;flex-direction:column;align-items:center;padding:12px 6px;gap:8px;flex-shrink:0;
+}
+.mock-logo-img{width:32px;height:32px;border-radius:50%;object-fit:cover;margin-bottom:6px}
+.mock-nav-dot{width:32px;height:6px;border-radius:3px;background:rgba(201,168,76,.2)}
+.mock-nav-dot.act{background:rgba(201,168,76,.6)}
+.mock-main{flex:1;padding:12px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.mock-topbar{display:flex;justify-content:space-between;align-items:center}
+.mock-title{font-size:9px;font-weight:700;color:#e8d5a3;letter-spacing:.05em}
+.mock-badge{font-size:7px;background:rgba(201,168,76,.2);color:#C9A84C;padding:2px 6px;border-radius:4px}
+.mock-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:4px}
+.mock-stat{background:rgba(255,255,255,.04);border-radius:6px;padding:5px 4px;text-align:center}
+.mock-stat-n{font-size:10px;font-weight:700;color:#E8C96A;display:block}
+.mock-stat-l{font-size:6px;color:rgba(255,255,255,.3)}
+.mock-cards{display:grid;grid-template-columns:3fr 2fr;gap:5px}
+.mock-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:6px;padding:6px}
+.mock-card-t{font-size:6px;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.mock-row{height:5px;background:rgba(255,255,255,.06);border-radius:3px;margin-bottom:3px}
+.mock-row:last-child{margin-bottom:0;width:70%}
+.mock-pills{display:flex;gap:3px;flex-wrap:wrap}
+.mock-pill{height:12px;padding:0 5px;background:rgba(201,168,76,.12);border-radius:3px;font-size:6px;color:#C9A84C;display:flex;align-items:center}
+
+/* Creative/artistic mock screen */
+.mock-creative{
+  width:100%;height:100%;
+  background:linear-gradient(135deg,#0a0a0f 0%,#12101a 100%);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.mock-grain{position:absolute;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E");opacity:.6;pointer-events:none}
+.mock-particles{position:absolute;inset:0}
+.mock-p{position:absolute;width:3px;height:3px;border-radius:50%;background:#c9a882;opacity:.5}
+.mock-center{text-align:center;position:relative;z-index:2}
+.mock-serif{font-family:'Georgia',serif;font-size:20px;font-weight:300;color:#f0ede8;letter-spacing:-.02em;font-style:italic;line-height:1.1}
+.mock-serif em{color:#c9a882}
+.mock-sub{font-size:7px;letter-spacing:.2em;text-transform:uppercase;color:#6b6880;margin-top:6px}
+.mock-dots-row{display:flex;gap:5px;justify-content:center;margin-top:10px}
+.mock-dot-c{width:4px;height:4px;border-radius:50%;background:#6b6880}
+.mock-dot-c.on{background:#c9a882}
+.mock-cursor-line{position:absolute;width:1px;height:30px;background:linear-gradient(to bottom,transparent,#c9a882,transparent);animation:cBlink 1.5s ease-in-out infinite alternate}
+@keyframes cBlink{from{opacity:.3}to{opacity:.9}}
+
+/* Floating tags on screen */
+.screen-tag{position:absolute;background:rgba(0,0,0,.6);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.1);border-radius:6px;padding:4px 8px;font-family:'Space Mono',monospace;font-size:9px;color:rgba(255,255,255,.7)}
+
+/* Project body */
+.proj-body{padding:1.4rem 1.6rem 1.6rem;flex:1;display:flex;flex-direction:column}
+.proj-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.6rem;gap:10px}
+.proj-num{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px}
+.proj-name{font-size:17px;font-weight:800;line-height:1.2;letter-spacing:-.02em}
+.proj-link{width:32px;height:32px;border:1px solid var(--border2);border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--muted2);flex-shrink:0;font-size:14px;transition:border-color .2s,color .2s}
+.proj-card-big:hover .proj-link{border-color:var(--accent);color:var(--accent)}
+.proj-desc{font-size:13px;color:var(--muted2);line-height:1.7;margin-bottom:1rem;flex:1}
+
+/* Feature chips */
+.proj-features{display:flex;flex-direction:column;gap:5px;margin-bottom:1rem}
+.feat-row{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted2)}
+.feat-row::before{content:'';width:4px;height:4px;border-radius:50%;background:var(--accent);flex-shrink:0}
+
+.proj-tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-family:'Space Mono',monospace;font-size:10px;padding:3px 9px;border-radius:4px;background:rgba(0,229,255,.07);color:var(--accent);border:1px solid rgba(0,229,255,.15)}
+.tag-purple{background:rgba(123,97,255,.07);color:var(--accent2);border-color:rgba(123,97,255,.15)}
+.tag-warm{background:rgba(201,168,76,.07);color:#C9A84C;border-color:rgba(201,168,76,.15)}
+
+/* CONTACT */
+.contact{padding:6rem 4rem;text-align:center;border-top:1px solid var(--border);position:relative;overflow:hidden}
+.contact-glow{position:absolute;width:700px;height:350px;background:radial-gradient(ellipse,rgba(0,229,255,.05) 0%,transparent 65%);left:50%;top:50%;transform:translate(-50%,-50%);pointer-events:none}
+.contact h2{font-size:3.2rem;font-weight:800;letter-spacing:-.04em;margin-bottom:1rem;position:relative;z-index:1}
+.contact p{color:var(--muted2);font-size:.95rem;max-width:500px;margin:0 auto 3rem;position:relative;z-index:1;line-height:1.7}
+
+.social-grid{display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;position:relative;z-index:1}
+.soc{display:flex;align-items:center;gap:12px;padding:.85rem 1.75rem;background:var(--surface2);border:1px solid var(--border2);border-radius:12px;text-decoration:none;color:var(--text);transition:border-color .25s,transform .25s,background .25s}
+.soc:hover{border-color:var(--accent);transform:translateY(-4px);background:rgba(0,229,255,.05)}
+.soc-ico{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.soc-info{text-align:left}
+.soc-name{font-size:13px;font-weight:700;display:block}
+.soc-handle{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted2);display:block;margin-top:1px}
+
+footer{text-align:center;padding:1.75rem;border-top:1px solid var(--border);font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)}
+
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:rgba(0,229,255,.3);border-radius:2px}
+
+.blink{animation:blink 1s step-end infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}.hero-right{display:none}
+  nav{padding:1rem 1.5rem}
+  section{padding:4rem 1.5rem}
+  .skills-grid{grid-template-columns:1fr 1fr}
+  .proj-featured{grid-template-columns:1fr}
+  .contact{padding:4rem 1.5rem}
+  .hero-left{padding:5rem 1.5rem 3rem}
+  .stats-row{flex-wrap:wrap}.stat{flex:1 1 50%}
+}
+</style>
+</head>
+<body>
+
+<div id="cdot"></div>
+<div id="cring"></div>
+
+<nav>
+  <div class="logo">&lt;dipa.dev /&gt;</div>
+  <ul class="nav-links">
+    <li><a href="#about">Tentang</a></li>
+    <li><a href="#skills">Skill</a></li>
+    <li><a href="#projects">Proyek</a></li>
+    <li><a href="#contact">Kontak</a></li>
+  </ul>
+</nav>
+
+<div class="hero" id="about">
+  <div class="grid-bg"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="hero-left">
+    <div class="h-tag">Tersedia untuk peluang baru</div>
+    <h1 class="h-name">Halo, Saya<br><span class="grad">Dipa</span><span class="blink" style="color:var(--accent)">_</span></h1>
+    <p class="h-sub">Full-Stack Web Developer &nbsp;·&nbsp; Jakarta, Indonesia</p>
+    <p class="h-bio">Saya membangun produk digital yang cepat, elegan, dan berdampak nyata — dari sistem informasi kampus yang kompleks hingga pengalaman web artistik yang memikat. Passionate dalam menciptakan produk yang bermakna.</p>
+    <div class="h-btns">
+      <a href="#projects" class="btn-p">Lihat Proyek →</a>
+      <a href="#contact" class="btn-g">Hubungi Saya</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="photo-wrap">
+      <div class="photo-line"></div>
+      <img id="profile-img" src="" alt="Dipa — Web Developer" />
+      <div class="photo-badge"><strong>4+</strong>Tahun Pengalaman<br>Web Development</div>
+    </div>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat"><span class="stat-n" id="s1">0</span><span class="stat-l">Tahun Pengalaman</span></div>
+  <div class="stat"><span class="stat-n" id="s2">0</span><span class="stat-l">Proyek Selesai</span></div>
+  <div class="stat"><span class="stat-n" id="s3">0</span><span class="stat-l">Klien Puas</span></div>
+  <div class="stat"><span class="stat-n" id="s4">0</span><span class="stat-l">Open Source</span></div>
+</div>
+
+<section id="skills">
+  <div class="sec-lbl">Keahlian Teknis</div>
+  <div class="sec-ttl">Tech Stack Saya</div>
+  <div class="skills-grid" id="skillsGrid">
+    <div class="sk-card"><div class="sk-top"><span class="sk-name">React / Next.js</span><span class="sk-pct">95%</span></div><div class="sk-track"><div class="sk-fill" data-w="0.95"></div></div></div>
+    <div class="sk-card"><div class="sk-top"><span class="sk-name">TypeScript</span><span class="sk-pct">88%</span></div><div class="sk-track"><div class="sk-fill" data-w="0.88"></div></div></div>
+    <div class="sk-card"><div class="sk-top"><span class="sk-name">Node.js / Express</span><span class="sk-pct">85%</span></div><div class="sk-track"><div class="sk-fill" data-w="0.85"></div></div></div>
+    <div class="sk-card"><div class="sk-top"><span class="sk-name">Firebase / Firestore</span><span class="sk-pct">82%</span></div><div class="sk-track"><div class="sk-fill" data-w="0.82"></div></div></div>
+    <div class="sk-card"><div class="sk-top"><span class="sk-name">CSS / Animasi Web</span><span class="sk-pct">90%</span></div><div class="sk-track"><div class="sk-fill" data-w="0.90"></div></div></div>
+    <div class="sk-card"><div class="sk-top"><span class="sk-name">UI/UX Design</span><span class="sk-pct">78%</span></div><div class="sk-track"><div class="sk-fill" data-w="0.78"></div></div></div>
+  </div>
+</section>
+
+<section id="projects" style="padding-top:0">
+  <div class="sec-lbl">Portofolio Nyata</div>
+  <div class="sec-ttl">Proyek yang Saya Kerjakan</div>
+
+  <div class="proj-featured">
+
+    <!-- PROJECT 1: IIN Portal -->
+    <div class="proj-card-big" onclick="window.open('https://institutintegritasnusantara-tech.github.io/portalkampus/login.html','_blank')" style="cursor:none">
+      <div class="proj-screen">
+        <div class="proj-screen-inner">
+          <div class="mock-portal">
+            <div class="mock-sidebar">
+              <img class="mock-logo-img" id="mock-logo" src="" alt="IIN">
+              <div class="mock-nav-dot act"></div>
+              <div class="mock-nav-dot"></div>
+              <div class="mock-nav-dot"></div>
+              <div class="mock-nav-dot"></div>
+              <div class="mock-nav-dot"></div>
+              <div class="mock-nav-dot"></div>
+            </div>
+            <div class="mock-main">
+              <div class="mock-topbar">
+                <span class="mock-title">📋 Portal Akademik IIN</span>
+                <span class="mock-badge">Sem. Genap 2025/26</span>
+              </div>
+              <div class="mock-stats">
+                <div class="mock-stat"><span class="mock-stat-n">3.87</span><span class="mock-stat-l">IPK</span></div>
+                <div class="mock-stat"><span class="mock-stat-n">21</span><span class="mock-stat-l">SKS</span></div>
+                <div class="mock-stat"><span class="mock-stat-n">3</span><span class="mock-stat-l">Tagihan</span></div>
+                <div class="mock-stat"><span class="mock-stat-n">2</span><span class="mock-stat-l">Pinjaman</span></div>
+              </div>
+              <div class="mock-cards">
+                <div class="mock-card">
+                  <div class="mock-card-t">📅 Jadwal Hari Ini</div>
+                  <div class="mock-pills">
+                    <span class="mock-pill">Pemrograman Web</span>
+                    <span class="mock-pill">Kecerdasan Buatan</span>
+                    <span class="mock-pill">RPL</span>
+                  </div>
+                </div>
+                <div class="mock-card">
+                  <div class="mock-card-t">📢 Pengumuman</div>
+                  <div class="mock-row"></div>
+                  <div class="mock-row"></div>
+                  <div class="mock-row"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-tag" style="top:10px;right:10px">🔥 Live + Firebase</div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-num">01 / PROYEK UTAMA</div>
+        <div class="proj-header">
+          <div>
+            <div class="proj-name">Portal Akademik IIN</div>
+          </div>
+          <a class="proj-link" href="https://institutintegritasnusantara-tech.github.io/portalkampus/login.html" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none">↗</a>
+        </div>
+        <p class="proj-desc">Sistem informasi akademik kampus Institut Integritas Nusantara yang lengkap — mencakup manajemen jadwal kuliah, KRS/KHS, nilai & transkrip, pembayaran UKT, perpustakaan digital, surat keterangan, dan panel admin. Terintegrasi dengan Firebase Authentication & Firestore secara real-time.</p>
+        <div class="proj-features">
+          <div class="feat-row">Login multi-role: Mahasiswa, Dosen & Admin</div>
+          <div class="feat-row">Dashboard akademik real-time (IPK, SKS, jadwal)</div>
+          <div class="feat-row">Manajemen keuangan & tagihan UKT</div>
+          <div class="feat-row">Perpustakaan digital & pengajuan surat otomatis</div>
+          <div class="feat-row">Panel Admin lengkap dengan manajemen pengguna</div>
+        </div>
+        <div class="proj-tags">
+          <span class="tag">HTML/CSS/JS</span>
+          <span class="tag">Firebase Auth</span>
+          <span class="tag">Firestore</span>
+          <span class="tag tag-warm">Multi-Role</span>
+          <span class="tag tag-warm">Real-time DB</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROJECT 2: Creative Web -->
+    <div class="proj-card-big" onclick="window.open('https://institutintegritasnusantara-tech.github.io/flower-missing-you/','_blank')" style="cursor:none">
+      <div class="proj-screen">
+        <div class="proj-screen-inner">
+          <div class="mock-creative">
+            <div class="mock-grain"></div>
+            <div class="mock-particles">
+              <div class="mock-p" style="top:20%;left:15%;width:2px;height:2px"></div>
+              <div class="mock-p" style="top:60%;left:75%;width:3px;height:3px;opacity:.3"></div>
+              <div class="mock-p" style="top:35%;left:60%;width:2px;height:2px;opacity:.6"></div>
+              <div class="mock-p" style="top:75%;left:25%;width:2px;height:2px;opacity:.4"></div>
+              <div class="mock-p" style="top:15%;left:80%;width:4px;height:4px;opacity:.2"></div>
+            </div>
+            <div class="mock-center">
+              <div class="mock-serif">i miss <em>you</em></div>
+              <div class="mock-cursor-line" style="margin:8px auto"></div>
+              <div class="mock-sub">click to feel</div>
+              <div class="mock-dots-row">
+                <div class="mock-dot-c on"></div>
+                <div class="mock-dot-c"></div>
+                <div class="mock-dot-c"></div>
+                <div class="mock-dot-c"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="screen-tag" style="top:10px;right:10px">✨ Interactive Art</div>
+      </div>
+      <div class="proj-body">
+        <div class="proj-num">02 / PROYEK KREATIF</div>
+        <div class="proj-header">
+          <div>
+            <div class="proj-name">i miss you — Interactive Web</div>
+          </div>
+          <a class="proj-link" href="https://institutintegritasnusantara-tech.github.io/flower-missing-you/" target="_blank" onclick="event.stopPropagation()" style="text-decoration:none">↗</a>
+        </div>
+        <p class="proj-desc">Pengalaman web artistik multi-scene yang menggabungkan tipografi elegan, animasi partikel, dan interaksi emosional. Dibangun dengan pure CSS & JavaScript — setiap klik memunculkan efek hati, ripple, dan transisi scene yang puitis. Menghadirkan teknologi sebagai medium ekspresi.</p>
+        <div class="proj-features">
+          <div class="feat-row">Multi-scene storytelling dengan navigasi klik</div>
+          <div class="feat-row">Custom cursor & particle animation system</div>
+          <div class="feat-row">Efek hati & ripple interaktif on-click</div>
+          <div class="feat-row">Tipografi Playfair Display dengan grain overlay</div>
+          <div class="feat-row">100% Pure CSS & Vanilla JS — zero dependency</div>
+        </div>
+        <div class="proj-tags">
+          <span class="tag tag-purple">Vanilla JS</span>
+          <span class="tag tag-purple">CSS Animation</span>
+          <span class="tag tag-purple">Creative Coding</span>
+          <span class="tag tag-warm">Interactive Art</span>
+          <span class="tag tag-warm">Storytelling</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<div class="contact" id="contact">
+  <div class="contact-glow"></div>
+  <h2>Mari Berkolaborasi</h2>
+  <p>Punya proyek menarik? Saya siap mendengar ide Anda dan mewujudkannya menjadi kenyataan digital yang luar biasa.</p>
+  <div class="social-grid">
+    <a class="soc" href="https://instagram.com/arkstyanp" target="_blank" rel="noopener">
+      <div class="soc-ico" style="background:linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+      </div>
+      <div class="soc-info"><span class="soc-name">Instagram</span><span class="soc-handle">@arkstyanp</span></div>
+    </a>
+    <a class="soc" href="https://wa.me/yyta" target="_blank" rel="noopener">
+      <div class="soc-ico" style="background:#25D366">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      </div>
+      <div class="soc-info"><span class="soc-name">WhatsApp</span><span class="soc-handle">yyta</span></div>
+    </a>
+    <a class="soc" href="https://tiktok.com/@p4wwyyy" target="_blank" rel="noopener">
+      <div class="soc-ico" style="background:#010101;border:1px solid rgba(255,255,255,.12)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/></svg>
+      </div>
+      <div class="soc-info"><span class="soc-name">TikTok</span><span class="soc-handle">@p4wwyyy</span></div>
+    </a>
+  </div>
+</div>
+
+<footer>&copy; 2026 Dipa &nbsp;·&nbsp; Web Developer &nbsp;·&nbsp; Jakarta, Indonesia &nbsp;·&nbsp; Dibuat dengan dedikasi &amp; kopi ☕</footer>
+
+<script>
+(function(){
+  document.getElementById('profile-img').src='photo.jpg';
+  document.getElementById('mock-logo').src='logo.png';
+})();
+
+const dot=document.getElementById('cdot'),ring=document.getElementById('cring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+(function a(){dot.style.left=mx+'px';dot.style.top=my+'px';rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(a)})();
+
+function counter(id,target,suffix,delay){
+  setTimeout(()=>{const el=document.getElementById(id);let n=0;const step=Math.ceil(target/45);const iv=setInterval(()=>{n=Math.min(n+step,target);el.textContent=n+suffix;if(n>=target)clearInterval(iv)},30)},delay);
+}
+counter('s1',4,'+',1200);counter('s2',32,'+',1350);counter('s3',18,'+',1500);counter('s4',47,'+',1650);
+
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.querySelectorAll('.sk-fill').forEach((b,i)=>{setTimeout(()=>{b.style.transform='scaleX('+b.dataset.w+')'},i*100)});obs.unobserve(e.target)}})
+},{threshold:.2});
+obs.observe(document.getElementById('skillsGrid'));
+</script>
+</body>
+</html>
